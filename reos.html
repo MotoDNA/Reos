@@ -2536,6 +2536,29 @@ async function syncPoCost(po, supply){
 }
 /* 외주업체가 자기 화면에서 납기와 진행을 적게 하는 링크.
    Re:Store 의 점주 링크와 같은 얼개입니다 — 링크만으로는 못 들어옵니다. */
+/* 발주 사양의 제품명. 업체에게 그대로 나갑니다. */
+function specTitle(){
+  const v=(cur.pos.find(x=>x.share_token)||{}).spec_ver;
+  const sp=cur.specs.find(x=>x.ver===v)||cur.specs.find(x=>x.is_final)||cur.specs[0];
+  return (sp&&sp.title)||'';
+}
+/* 제품명에 고객사 이름이 들어 있나. 제작기획사에서 최종 발주처를 업체가
+   알면 다음번엔 직접 붙습니다 — 실제로 자주 나는 사고입니다. */
+function custInTitle(){
+  const p=prjOf(cur.id), c=custOf(p.customer_id);
+  if(!c||!c.name) return false;
+  const t=specTitle().replace(/\s/g,''); if(!t) return false;
+  const core=c.name.replace(/\s|주식회사|\(주\)|㈜|\(유\)/g,'');
+  /* 「한빛문구」를 「2026 한빛 양장 다이어리」에서도 잡아야 합니다.
+     회사 이름을 통째로 적는 사람은 드물고 앞 두세 글자만 씁니다.
+     그래서 앞에서부터 줄여 가며 봅니다. 한글은 두 글자, 영문은
+     세 글자까지 — 영문 두 글자는 아무 데나 걸립니다. */
+  const min = /^[A-Za-z]/.test(core) ? 3 : 2;
+  for(let n=Math.min(core.length,6); n>=min; n--){
+    if(t.includes(core.slice(0,n))) return true;
+  }
+  return false;
+}
 async function poShare(id){
   const o=cur.pos.find(x=>x.id===id); if(!o) return;
   let t=o.share_token, pin=o.pin;
@@ -2556,7 +2579,13 @@ async function poShare(id){
     '<div class="f"><label>핀 (따로 알려 주세요)</label>'+
       '<input value="'+esc(pin)+'" readonly style="letter-spacing:.3em;font-weight:800;text-align:center"></div>'+
     '<div class="hint">링크는 카톡으로 돌아다닙니다. 핀은 <b>다른 길로</b> 알려 주세요 — '+
-      '한 곳에 같이 적어 보내면 벽이 하나뿐인 것과 같습니다.</div>',
+      '한 곳에 같이 적어 보내면 벽이 하나뿐인 것과 같습니다.</div>'+
+    (/[가-힣A-Za-z]/.test(specTitle()) && custInTitle()
+      ? '<div class="alert amber" style="margin-top:10px">'+
+        '<svg viewBox="0 0 24 24"><path d="M12 8v5"/><circle cx="12" cy="16.5" r="1"/><circle cx="12" cy="12" r="9"/></svg>'+
+        '<span>사양의 <b>제품명에 고객사 이름</b>이 들어 있습니다. 제품명은 업체가 만들려면 '+
+        '있어야 해서 그대로 나갑니다 — 감추려면 제품명을 바꿔 두세요.</span></div>'
+      : ''),
     '<button class="btn ghost" onclick="closeSheet()">닫기</button>'+
     '<button class="btn" onclick="copyText(\''+esc(url)+'\')">링크 복사</button>');
 }
@@ -3779,16 +3808,7 @@ async function enter(){
   badge();
   showApp();
 }
-(async function boot(){
-  sayBounced();
-  const t=new URLSearchParams(location.search).get('t');
-  if(t){ await openPortal(t); return; }        /* 고객·외주업체 화면으로 갈립니다 */
-  if(!sbInit()){ showGate(); return; }
-  const r=await loadMe();
-  if(r.moved) return;
-  if(r.ok) await enter();
-  else { if(r.error) setTimeout(()=>{ $('gateMsg').textContent=r.error; },100); showGate(); }
-})();
+
 
 /* ═══════════════════════════════════════════════════════════════
    바깥에서 들어온 사람 — 고객사와 외주업체
@@ -3950,4 +3970,27 @@ async function supSend(extra){
   drawSupplierView(r);
   const m2=$('supMsg'); if(m2){ m2.textContent='저장했습니다. 발주처에 전달됐습니다.'; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   맨 마지막에 둡니다 — 여기서 부르는 것들이 **먼저 만들어져 있어야** 합니다
+
+   한동안 이 덩어리가 파일 가운데에 있었습니다. boot() 는 부르는 즉시
+   돌기 시작하는데, 그 아래에 있던 `let portalT` 가 아직 만들어지지
+   않아서 ?t= 로 들어오면 통째로 멎었습니다
+   (Cannot access 'portalT' before initialization).
+
+   node --check 로는 안 걸립니다. 문법은 멀쩡하기 때문입니다.
+   브라우저로 열어 봐야 압니다 — 그래서 문서에 "반드시 열어 보라" 고
+   적혀 있습니다.
+   ═══════════════════════════════════════════════════════════════ */
+(async function boot(){
+  sayBounced();
+  const t=new URLSearchParams(location.search).get('t');
+  if(t){ await openPortal(t); return; }        /* 고객·외주업체 화면으로 갈립니다 */
+  if(!sbInit()){ showGate(); return; }
+  const r=await loadMe();
+  if(r.moved) return;
+  if(r.ok) await enter();
+  else { if(r.error) setTimeout(()=>{ $('gateMsg').textContent=r.error; },100); showGate(); }
+})();
 </script>

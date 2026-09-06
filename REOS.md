@@ -14,12 +14,62 @@
 
 ---
 
+## 0. ⚠ 아직 운영에 안 올렸습니다
+
+**표와 서버 함수는 운영에 들어가 있고, 앱은 로컬 커밋까지만 되어 있습니다.**
+저장소를 만들지 않았고 push 도 안 했습니다 — 올릴지 말지는 사람이 정합니다.
+
+지금 상태:
+
+| 무엇 | 어디까지 |
+|---|---|
+| 표 스물 · RLS · 보관함 | **운영 DB 에 들어감** |
+| ACTIVA 에 `reos` 열기 | **들어감** |
+| `reos-gate` 서버 함수 | **배포됨** |
+| 시연 자료 (프로젝트 5건) | **들어감** (`sql/0005_demo.sql`) |
+| `reos.html` 등 앱 | 로컬 커밋만 |
+| 형제 셋 토글 (넷으로) | 로컬 커밋만 |
+| `/os` rewrite | 로컬 커밋만 |
+| GitHub 저장소 · Pages | **아직 없음** |
+
+올리려면 — 순서대로:
+
+```bash
+# 1. 저장소를 만들고 올립니다 (Pages 는 공개에서만 공짜입니다)
+cd ~/Desktop/05_개발프로젝트/Reos
+gh repo create MotoDNA/Reos --public --source=. --push
+gh api -X POST repos/MotoDNA/Reos/pages -f 'source[branch]=main' -f 'source[path]=/'
+
+# 2. 형제 셋 (토글이 넷이 됩니다)
+git -C ~/Desktop/05_개발프로젝트/Rebind  push
+git -C ~/Desktop/05_개발프로젝트/Restore push
+
+# 3. 홈페이지 — /os rewrite
+#    ⚠ `npx vercel --prod` 는 쓰지 마세요. 지금 web/ 에 커밋 안 된 변경이
+#      34건 있어서 그것까지 함께 올라갑니다. git push 로 올리면
+#      커밋된 것만 올라갑니다.
+git -C ~/Desktop/05_개발프로젝트/network-dna push
+```
+
+올린 뒤 `https://dnalabs.kr/os` 를 열어 콘솔까지 봅니다.
+GitHub Pages 는 1~2분, 브라우저가 옛 파일을 한동안 보여 줍니다 — `?v=2`.
+
+시연 자료를 지우려면:
+
+```sql
+delete from public.os_projects  where id::text like 'd4000000-%';
+delete from public.os_customers where id::text like 'd4000000-%';
+delete from public.os_suppliers where id::text like 'd4000000-%';
+```
+
+---
+
 ## 1. 어디에 있나
 
 | | |
 |---|---|
-| 운영 | **https://dnalabs.kr/os** |
-| 저장소 | https://github.com/MotoDNA/Reos — GitHub Pages, `main` push 후 1~2분 |
+| 운영 | **https://dnalabs.kr/os** (아직 안 열렸습니다 — 0장) |
+| 저장소 | https://github.com/MotoDNA/Reos — 아직 안 만들었습니다 |
 | 폴더 | `~/Desktop/05_개발프로젝트/Reos` |
 
 **옛 주소(`reos.dnalabs.kr`)가 없습니다.** 형제 셋과 다른 점입니다.
@@ -337,6 +387,7 @@ io.open('/tmp/app.js','w',encoding='utf-8').write(re.findall(r'<script>(.*?)</sc
 | 닫힌 시트 | PC 에서는 가운데에 투명하게 남습니다. `visibility:hidden` 을 **미끄러져 내려간 뒤**에 걸어야 클릭을 안 먹고 닫히는 모습도 보입니다 |
 | `word-break:keep-all` | 혼자 두면 긴 주소 하나에 가로 스크롤이 생깁니다. `overflow-wrap:break-word` 를 **꼭 같이** |
 | 날짜 | `toISOString()` 을 그냥 쓰면 밤 아홉 시 넘어 만든 것이 어제로 찍힙니다. `todayKST()` 를 쓰세요 |
+| **사양 제품명** | 업체가 만들려면 있어야 해서 **그대로 나갑니다.** 거기에 고객사 이름이 들어 있으면 감출 방법이 없습니다 — 링크 만드는 자리에서 알려 주기만 합니다 |
 
 ---
 
