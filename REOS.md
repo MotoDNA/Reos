@@ -10,51 +10,26 @@
 네 서비스를 함께 다루는 규칙(얽혀 있는 것 · 배포 · 말투)은 스킬
 `~/.claude/skills/dnalabs/SKILL.md` 에 있습니다.
 
-*기준 2026-09-06*
+*기준 2026-09-07*
 
 ---
 
-## 0. ⚠ 아직 운영에 안 올렸습니다
+## 0. 올린 날 · 지우는 법
 
-**표와 서버 함수는 운영에 들어가 있고, 앱은 로컬 커밋까지만 되어 있습니다.**
-저장소를 만들지 않았고 push 도 안 했습니다 — 올릴지 말지는 사람이 정합니다.
+**2026-09-07 에 운영에 올렸습니다.** `https://dnalabs.kr/os` 가 열립니다.
 
-지금 상태:
-
-| 무엇 | 어디까지 |
+| 무엇 | |
 |---|---|
-| 표 스물 · RLS · 보관함 | **운영 DB 에 들어감** |
-| ACTIVA 에 `reos` 열기 | **들어감** |
-| `reos-gate` 서버 함수 | **배포됨** |
-| 시연 자료 (프로젝트 5건) | **들어감** (`sql/0005_demo.sql`) |
-| `reos.html` 등 앱 | 로컬 커밋만 |
-| 형제 셋 토글 (넷으로) | 로컬 커밋만 |
-| `/os` rewrite | 로컬 커밋만 |
-| GitHub 저장소 · Pages | **아직 없음** |
+| 표 21개 · RLS · 보관함 `osfiles` | 운영 DB |
+| ACTIVA `{rebind,recall,reos}` | 열림 |
+| `reos-gate` 서버 함수 | 배포됨 |
+| 앱 · 형제 셋 토글 · `/os` rewrite | 올림 |
+| 시연 자료 (프로젝트 5건) | 들어 있음 — 아래 참고 |
 
-올리려면 — 순서대로:
+### 시연 자료를 지우려면
 
-```bash
-# 1. 저장소를 만들고 올립니다 (Pages 는 공개에서만 공짜입니다)
-cd ~/Desktop/05_개발프로젝트/Reos
-gh repo create MotoDNA/Reos --public --source=. --push
-gh api -X POST repos/MotoDNA/Reos/pages -f 'source[branch]=main' -f 'source[path]=/'
-
-# 2. 형제 셋 (토글이 넷이 됩니다)
-git -C ~/Desktop/05_개발프로젝트/Rebind  push
-git -C ~/Desktop/05_개발프로젝트/Restore push
-
-# 3. 홈페이지 — /os rewrite
-#    ⚠ `npx vercel --prod` 는 쓰지 마세요. 지금 web/ 에 커밋 안 된 변경이
-#      34건 있어서 그것까지 함께 올라갑니다. git push 로 올리면
-#      커밋된 것만 올라갑니다.
-git -C ~/Desktop/05_개발프로젝트/network-dna push
-```
-
-올린 뒤 `https://dnalabs.kr/os` 를 열어 콘솔까지 봅니다.
-GitHub Pages 는 1~2분, 브라우저가 옛 파일을 한동안 보여 줍니다 — `?v=2`.
-
-시연 자료를 지우려면:
+첫 실제 프로젝트를 만들기 전에 지우는 편이 낫습니다. 섞이면 어느 것이
+진짜인지 헷갈립니다.
 
 ```sql
 delete from public.os_projects  where id::text like 'd4000000-%';
@@ -62,14 +37,20 @@ delete from public.os_customers where id::text like 'd4000000-%';
 delete from public.os_suppliers where id::text like 'd4000000-%';
 ```
 
+사양·견적·발주·샘플·원가·할 일은 프로젝트에 매달려 있어 같이 지워집니다.
+
+⚠ **공유 링크는 꺼 두었습니다.** 시연 자료의 고객 링크와 업체 링크는
+만들었다가 확인한 뒤 열쇠를 새로 뽑고 껐습니다. 보여 주실 때는
+프로젝트 화면에서 다시 켜세요.
+
 ---
 
 ## 1. 어디에 있나
 
 | | |
 |---|---|
-| 운영 | **https://dnalabs.kr/os** (아직 안 열렸습니다 — 0장) |
-| 저장소 | https://github.com/MotoDNA/Reos — 아직 안 만들었습니다 |
+| 운영 | **https://dnalabs.kr/os** |
+| 저장소 | https://github.com/MotoDNA/Reos — GitHub Pages, `main` push 후 1~2분 |
 | 폴더 | `~/Desktop/05_개발프로젝트/Reos` |
 
 **옛 주소(`reos.dnalabs.kr`)가 없습니다.** 형제 셋과 다른 점입니다.
