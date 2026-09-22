@@ -3655,6 +3655,11 @@ function drawSet(){
         '<button class="btn ghost sm" onclick="signOut()">나가기</button>'+
       '</div></div>'+
 
+    '<div class="card"><h3>요금과 서비스</h3>'+
+      '<p class="psub" style="margin:0 0 12px">지금 내시는 요금을 보시고, 서비스를 더하거나 뺄 수 있습니다.</p>'+
+      '<a class="btn ghost sm" href="https://dnalabs.kr/add-service?from=reos" target="_blank" rel="noopener">요금 보기 · 서비스 더하기</a>'+
+    '</div>'+
+
     '<div class="card"><h3>팀원 '+D.members.length+'명</h3>'+
       D.members.map(m=>'<div class="li"><span class="ic">'+esc((m.name||m.login_id).slice(0,2))+'</span>'+
         '<span class="lb"><b>'+esc(m.name||m.login_id)+'</b><span>'+esc(m.login_id)+'</span></span>'+
