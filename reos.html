@@ -971,8 +971,14 @@ async function loadMe(){
 }
 async function signOut(){
   try{ await sb.auth.signOut() }catch(e){}
-  me=null; D=blankData(); closeSheet(); closeDetail();
-  $('app').hidden=true; showGate();
+  /* 순서가 중요합니다. 예전에는 me 를 먼저 비우고 closeDetail() 을 불렀는데,
+     closeDetail 이 화면을 다시 그리다 설정 쪽에서 me.companyName 을 읽고 멈췄습니다.
+     그러면 아래 showGate() 까지 가지 못해 로그인 화면이 안 떴습니다.
+     창을 먼저 닫고(다시 그리지 않고) 앱을 가린 뒤에 비웁니다. */
+  closeSheet(); $('detail').hidden=true; cur=null; document.body.style.overflow='';
+  $('app').hidden=true;
+  me=null; D=blankData();
+  showGate();
 }
 const isAdmin = ()=>!!(me&&me.role==='admin');
 /* 금액을 볼 수 있는가. 데이터베이스도 같은 판단을 합니다(os_money_ok) —
@@ -3661,7 +3667,7 @@ function drawSet(){
       '</dl>'+
       '<div class="row" style="gap:8px;margin-top:12px">'+
         '<button class="btn ghost sm" onclick="changePw()">비밀번호 바꾸기</button>'+
-        '<button class="btn ghost sm" onclick="signOut()">나가기</button>'+
+        '<button class="btn ghost sm" onclick="if(confirm(\'로그아웃할까요?\'))signOut()">로그아웃</button>'+
       '</div></div>'+
 
     '<div class="card"><h3>요금과 서비스</h3>'+
