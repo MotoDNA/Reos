@@ -630,6 +630,14 @@ input,textarea,select{-webkit-appearance:none;appearance:none}
   #gate .box.wide .gside ul{margin-bottom:0}
   #gate .box.wide .gside h2{font-size:1.2rem}
 }
+
+/* 로그인 화면의 DNA Labs 는 홈페이지 링크입니다 — 글자 모양은 그대로 둡니다 */
+#gate a.mark{text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+#gate a.mark:active{opacity:.6}
+
+/* 위쪽 로고 = 이 앱의 첫 화면으로. Re:Bind·Re:Store 와 같은 규칙입니다. */
+button.brand{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button.brand:active{opacity:.55}
 </style>
 </head>
 <body>
@@ -638,7 +646,8 @@ input,textarea,select{-webkit-appearance:none;appearance:none}
 <div id="gate" hidden>
   <div class="box wide">
    <div class="gleft">
-    <div class="mark"><i class="logo" role="img" aria-label="DNA Labs"></i><span>DNA <b>Labs</b></span></div>
+    <!-- 로그인 화면의 DNA Labs 는 회사 홈페이지로 갑니다. 네 앱이 같습니다. -->
+    <a class="mark" href="https://dnalabs.kr/" title="DNA Labs 홈페이지로"><i class="logo" role="img" aria-label="DNA Labs"></i><span>DNA <b>Labs</b></span></a>
     <div class="pick four i3" id="appPick" role="tablist" aria-label="어느 서비스로 들어갈지">
       <span class="thumb" aria-hidden="true"></span>
       <button type="button" class="opt" id="pick-rebind" data-app="rebind" role="tab" aria-selected="false">
@@ -728,7 +737,7 @@ input,textarea,select{-webkit-appearance:none;appearance:none}
 <div id="app" hidden>
   <header class="appbar" id="appbar">
     <div class="in">
-      <div class="brand"><i class="logo"></i><span>Re<em>:</em>O-S</span></div>
+      <button class="brand" id="homeBtn" type="button" aria-label="처음 화면으로"><i class="logo"></i><span>Re<em>:</em>O-S</span></button>
       <div class="grow"></div>
       <div class="svcsw" id="svcSw" hidden>
         <button class="svcsw-b" id="svcSwB" type="button" aria-haspopup="true" aria-expanded="false" aria-label="서비스 바꾸기">
@@ -3939,6 +3948,15 @@ $('gateForm').addEventListener('submit',async e=>{
 $('btnSearch').onclick=openSearch;
 $('btnNoti').onclick=openNoti;
 $('btnWho').onclick=()=>go('set');
+/* 위쪽 로고 — 열린 창·찾기·알림·프로젝트 상세를 닫고 「오늘」로.
+   Re:Bind·Re:Store 의 로고와 같은 규칙입니다. */
+$('homeBtn').onclick=()=>{
+  try{ closeSheet() }catch(e){}
+  try{ closeSearch() }catch(e){}
+  try{ closeNoti() }catch(e){}
+  if(!$('detail').hidden) closeDetail();
+  go('dash');
+};
 $('navIn').addEventListener('click',e=>{ const b=e.target.closest('[data-p]'); if(b) go(b.dataset.p); });
 $('sheetX').onclick=closeSheet;
 $('shade').onclick=closeSheet;
